@@ -1,0 +1,29 @@
+@charset "UTF-8";
+
+/**
+ * 파일설명: 키프레임(@keyframes) 모음 — 표지 등장 · "moves." 그라데이션 흐름
+ * 작성자: 이영호
+ * 작성일: 2026-10-30
+ * @returns scss
+ */
+
+// 표지 제목: 한 줄씩 아래에서 올라옴
+@keyframes rise {
+  from{transform: translateY(105%);}
+  to{transform: none;}
+}
+// 표지 문구·하단: 살짝 올라오며 나타남
+@keyframes fadeUp {
+  from{opacity: 0;translate: 0 18px;}
+  to{opacity: 1;translate: 0 0;}
+}
+// 표지 eyebrow: 자간이 좁혀지며 나타남
+@keyframes track {
+  from{opacity: 0;letter-spacing: .9em;}
+  to{opacity: 1;letter-spacing: .42em;}
+}
+// "moves." 그라데이션이 좌우로 흐름
+@keyframes flow {
+  from{background-position: 0% 50%;}
+  to{background-position: 100% 50%;}
+}

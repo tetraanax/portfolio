@@ -1,0 +1,33 @@
+@charset "UTF-8";
+
+/**
+ * 파일설명: 좁은 화면(폭 760px 이하) — 궤도·줌을 끄고 평범한 세로 스크롤
+ * 작성자: 이영호
+ * 작성일: 2026-10-30
+ * @returns scss
+
+ * body.flat은 useOrbitNav가 붙임. index.scss에서 style 다음에 불러와 같은 선택자를 뒤에서 덮어씀(우선순위 핵 불필요)
+ * #world의 transform은 useOrbitNav가 flat으로 바뀔 때 인라인 값을 지우고 다시 넣지 않음 → 여기서 덮을 필요 없음
+ */
+body.flat{
+  .pin{position: static;overflow: visible;
+    &::before{position: fixed;}
+  }
+  #world{position: static;padding-block: 16px;padding-left: max(16px,env(safe-area-inset-left,0px));padding-right: max(16px,env(safe-area-inset-right,0px));}
+  #col{position: static;width: auto;}
+  .route,.grid,.prog{display: none;}
+  .art{padding: 0;gap: 24px;}
+  .hero{font-size: clamp(56px,17vw,96px);}
+  .ko{font-size: 32px;}
+  .split,.two,.cards,.boards,.deliver,.ds .g,.notes{grid-template-columns: 1fr;}
+  .deliver .shot img{height: auto;width: 100%;}
+  .board img{height: auto;}
+  .grid4{grid-template-columns: 1fr 1fr;}
+  .head{grid-template-columns: auto 1fr;gap: 4px 16px;
+    .pills{grid-column: 1/-1;justify-content: flex-start;}
+    .no{font-size: 40px;}
+    h2{font-size: 26px;}
+  }
+  .top{flex-wrap: wrap;gap: 10px;}
+  .menu{flex-basis: 100%;}
+}

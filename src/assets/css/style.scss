@@ -1,0 +1,213 @@
+@charset "UTF-8";
+
+@use 'keyframe';
+
+/**
+ * 파일설명: 포트폴리오 스타일 — 디자인 토큰 · 상단 · 궤도 무대 · 섹션 콘텐츠
+ * 작성자: 이영호
+ * 작성일: 2026-10-30
+ * @returns scss
+
+ * 값은 정적 버전(css/style.css) 그대로 px. 좁은 화면(body.flat) 덮어쓰기는 flat.scss
+ */
+
+// 디자인 토큰 (PDF 톤)
+:root{padding-top: env(safe-area-inset-top,0px);padding-bottom: env(safe-area-inset-bottom,0px);color-scheme: dark;
+  --bg: #0A0B14;--ink: #F2F2F7;--sub: #C9CBD8;--muted: #8B8EA3;--line: #1E2030;--card: #11121D;--card-line: #24273A;
+  --violet: #A47BFF;--pink: #E05BB5;--blue: #5B8CFF;--gold: #E9B65C;--live: #43D17A;
+  --display: "Poppins","Noto Sans KR",system-ui,sans-serif;
+  --body: "Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+}
+*,*::before,*::after{box-sizing: border-box;}
+[hidden]{display: none;}
+body{margin: 0;font-size: 14px;background: var(--bg);color: var(--ink);font-family: var(--body);-webkit-font-smoothing: antialiased;
+  // iOS 상태 표시줄 뒤 띠
+  &::before{content: "";position: fixed;inset: 0 0 auto;height: env(safe-area-inset-top,0px);z-index: 10;background: var(--bg);}
+}
+button{font: inherit;color: inherit;}
+:focus-visible{outline: 2px solid var(--violet);outline-offset: 3px;}
+img{display: block;width: 100%;max-width: 100%;height: auto;}
+
+// 상단: 이름 · 케이스 메뉴 · 진행 번호
+.top{position: sticky;top: env(safe-area-inset-top,0px);display: flex;align-items: center;gap: 28px;padding-block: 14px;padding-left: max(24px,env(safe-area-inset-left,0px));padding-right: max(24px,env(safe-area-inset-right,0px));border-bottom: 1px solid var(--line);background: var(--bg);z-index: 6;}
+.who{white-space: nowrap;display: flex;align-items: baseline;gap: 8px;
+  b{font-weight: 900;font-size: 1.05rem;}
+  span{font-size: .78rem;color: var(--muted);}
+}
+.menu{display: flex;align-items: center;gap: 2px;overflow-x: auto;min-width: 0;flex: 1;scrollbar-width: none;
+  .part{font-family: var(--display);font-size: .62rem;font-weight: 600;letter-spacing: .18em;color: var(--violet);margin: 0 6px 0 14px;white-space: nowrap;}
+  button{background: none;border: 0;padding: 7px 11px;border-radius: 999px;cursor: pointer;white-space: nowrap;color: var(--muted);font-size: .84rem;
+    &:hover{color: var(--ink);}
+    &.on{color: var(--ink);background: var(--card);box-shadow: inset 0 0 0 1px var(--card-line);}
+  }
+}
+.prog{font-family: var(--display);font-size: .72rem;letter-spacing: .12em;color: var(--muted);white-space: nowrap;font-variant-numeric: tabular-nums;}
+
+// 고정 무대: 화면은 그대로 두고 그 안에서 #world(도화지)만 움직임. top은 useOrbitNav가 상단 높이로 맞춤
+.pin{position: fixed;left: 0;right: 0;bottom: 0;top: var(--headH,61px);overflow: hidden;--gx: 80%;--gy: 8%;
+  // 광원: 오른쪽 위 자주(--gx·--gy로 진행에 따라 이동) + 왼쪽 아래 파랑
+  &::before{content: "";position: absolute;inset: 0;pointer-events: none;background: radial-gradient(42% 46% at var(--gx) var(--gy),rgba(214,74,120,.28),rgba(118,72,210,.18) 45%,transparent 75%),radial-gradient(40% 50% at 8% 100%,rgba(48,86,170,.28),transparent 70%);}
+}
+#world{position: absolute;left: 0;top: 0;transform-origin: 0 0;will-change: transform;}
+// 도화지: 점 격자로 이동감을 줌
+.grid{position: absolute;pointer-events: none;background-image: radial-gradient(circle,#232539 1.6px,transparent 1.8px);background-size: 56px 56px;}
+// 궤도선 · 섹션 라벨(.lb) · PART 라벨(.pt) · 지점(.node), 현재 섹션은 .on
+.route{position: absolute;pointer-events: none;overflow: visible;
+  .lb{fill: #8B8EA3;font-family: "Noto Sans KR",sans-serif;font-size: 15px;}
+  .pt{fill: #A47BFF;font-family: Poppins,sans-serif;font-weight: 600;font-size: 11px;letter-spacing: 3px;}
+  .dir{fill: #5A5D78;font-family: Poppins,sans-serif;font-weight: 600;font-size: 12px;letter-spacing: 3px;}
+  .on .lb{fill: #F2F2F7;font-weight: 700;}
+  .node{fill: #0A0B14;stroke: #5A4E86;stroke-width: 2.5;}
+  .on .node{stroke: #E05BB5;stroke-width: 3;}
+}
+// 궤도 위 현재 점(위치는 useOrbitNav가 transform으로)
+.now{position: absolute;left: 0;top: 0;width: 24px;height: 24px;margin: -12px 0 0 -12px;border-radius: 50%;border: 2px solid var(--violet);background: var(--bg);box-shadow: 0 0 0 7px rgba(164,123,255,.12),0 0 26px rgba(224,91,181,.55);pointer-events: none;
+  &::after{content: "";position: absolute;inset: 5px;border-radius: 50%;background: linear-gradient(135deg,var(--pink),var(--violet));}
+}
+
+#col{position: absolute;left: 0;top: 0;width: 1120px;
+  // 궤도 옆에 배치된 뒤(.placed, useOrbitNav가 붙임)엔 섹션마다 절대 위치
+  &.placed .sec{position: absolute;width: 1120px;margin: 0;}
+}
+.sec + .sec{margin-top: 72px;}
+.art{padding: 0 64px;display: flex;flex-direction: column;gap: 36px;}
+
+// 표지
+.coverHero{display: flex;flex-direction: column;gap: 24px;}
+.eyebrow{font-family: var(--display);font-size: 13px;letter-spacing: .42em;color: var(--muted);font-weight: 600;animation: track 1.2s cubic-bezier(.2,.75,.15,1) .15s both;}
+.hero{font-family: var(--display);font-weight: 900;font-size: 124px;line-height: .98;letter-spacing: -.035em;margin: 0;
+  em{font-style: normal;background: linear-gradient(90deg,var(--pink),var(--violet) 30%,var(--blue) 50%,var(--violet) 70%,var(--pink));background-size: 220% 100%;-webkit-background-clip: text;background-clip: text;color: transparent;animation: flow 7s ease-in-out 1.2s infinite alternate;}
+  .ln{display: block;overflow: hidden;padding-bottom: .06em;
+    > span{display: inline-block;animation: rise 1s cubic-bezier(.2,.75,.15,1) both;}
+    &:nth-child(1) > span{animation-delay: .35s;}
+    &:nth-child(2) > span{animation-delay: .47s;}
+  }
+}
+.ko{font-weight: 900;font-size: 46px;line-height: 1.12;letter-spacing: -.02em;margin: 0;animation: fadeUp .9s ease .7s both;}
+.lead{font-size: 18px;line-height: 1.75;color: var(--sub);margin: 0;max-width: 36em;animation: fadeUp .9s ease .85s both;
+  b{color: var(--ink);font-weight: 700;}
+}
+.coverFoot{display: flex;justify-content: space-between;align-items: flex-end;border-top: 1px solid var(--line);padding-top: 22px;gap: 24px;flex-wrap: wrap;animation: fadeUp .9s ease 1s both;
+  .nm{font-weight: 900;font-size: 26px;
+    small{font-weight: 400;font-size: 15px;color: var(--muted);margin-left: 8px;}
+  }
+  .role{color: var(--muted);font-size: 14px;margin-top: 6px;}
+  .mail{color: var(--sub);font-size: 15px;user-select: all;}
+}
+.scrollCue{display: flex;align-items: center;gap: 12px;font-family: var(--display);font-size: 12px;letter-spacing: .24em;color: var(--muted);animation: fadeUp .9s ease 1.3s both;
+  i{display: block;width: 60px;height: 1px;background: linear-gradient(90deg,var(--violet),transparent);}
+}
+// 동작 줄이기: 표지 등장·흐름 애니메이션 끔(위 선언들보다 뒤에 있어야 덮어씀)
+@media (prefers-reduced-motion: reduce){
+  .hero .ln > span,.eyebrow,.ko,.lead,.coverFoot,.hero em,.scrollCue{animation: none;}
+}
+
+// 케이스 머리: 번호 · 제목·서브 · 필
+.head{display: grid;grid-template-columns: auto 1fr auto;gap: 0 26px;align-items: start;border-bottom: 1px solid var(--line);padding-bottom: 22px;
+  .no{font-family: var(--display);font-weight: 800;font-size: 52px;line-height: 1;background: linear-gradient(180deg,#C7A6FF,var(--violet));-webkit-background-clip: text;background-clip: text;color: transparent;}
+  h2{margin: 2px 0 8px;font-weight: 900;font-size: 36px;letter-spacing: -.02em;line-height: 1.15;}
+  .sub{color: var(--muted);font-size: 15px;}
+}
+// 나뉜 뒤쪽 섹션의 이어짐 머리
+.cont{display: flex;justify-content: space-between;align-items: baseline;border-bottom: 1px solid var(--line);padding-bottom: 16px;color: var(--muted);font-size: 14px;
+  b{font-family: var(--display);color: var(--violet);margin-right: 10px;}
+  span:first-child{color: var(--sub);font-weight: 700;}
+  .pg{font-family: var(--display);font-size: 13px;letter-spacing: .1em;}
+}
+.pills{display: flex;gap: 8px;flex-wrap: wrap;justify-content: flex-end;padding-top: 6px;}
+.pill{border: 1px solid var(--card-line);background: var(--card);color: var(--sub);font-size: 13px;font-weight: 500;padding: 7px 14px;border-radius: 999px;display: inline-flex;align-items: center;gap: 7px;white-space: nowrap;
+  &.live{color: var(--live);border-color: rgba(67,209,122,.35);background: rgba(67,209,122,.08);
+    &::before{content: "";width: 7px;height: 7px;border-radius: 50%;background: var(--live);}
+  }
+}
+.label{font-family: var(--display);font-size: 12.5px;font-weight: 600;letter-spacing: .2em;color: var(--violet);text-transform: uppercase;margin: 0 0 12px;}
+.shot{border-radius: 12px;overflow: hidden;background: #fff;box-shadow: 0 0 0 1px var(--card-line),0 30px 80px -40px rgba(120,80,255,.45);}
+.split{display: grid;grid-template-columns: 1.45fr 1fr;gap: 40px;align-items: center;
+  .side{display: flex;flex-direction: column;gap: 30px;}
+}
+.two{display: grid;grid-template-columns: 1fr 1fr;gap: 44px;}
+.role{
+  b{display: block;font-size: 17px;margin-bottom: 8px;}
+  p{color: var(--sub);font-size: 15.5px;line-height: 1.7;margin: 0;}
+}
+.tp{list-style: none;margin: 0;padding: 0;display: flex;flex-direction: column;gap: 11px;
+  li{display: flex;gap: 14px;font-size: 15.5px;color: var(--sub);line-height: 1.6;
+    &::before{content: "";width: 9px;height: 9px;border-radius: 50%;margin-top: 8px;flex: none;background: linear-gradient(135deg,var(--pink),var(--violet));}
+  }
+}
+.foot{display: flex;justify-content: space-between;color: var(--muted);font-size: 14px;border-top: 1px solid var(--line);padding-top: 18px;}
+.intro{font-size: 16.5px;line-height: 1.8;color: var(--sub);margin: 0;
+  b{color: var(--ink);}
+}
+
+// ETAXKOREA 카드
+.cards{display: grid;grid-template-columns: repeat(3,1fr);gap: 20px;}
+.card{background: var(--card);border: 1px solid var(--card-line);border-radius: 12px;overflow: hidden;
+  .img{aspect-ratio: 16/9;overflow: hidden;background: #fff;
+    img{width: 100%;height: 100%;object-fit: cover;object-position: top;}
+  }
+  .txt{padding: 18px 20px 22px;}
+  h4{margin: 0 0 8px;font-size: 16.5px;font-weight: 700;display: flex;gap: 10px;align-items: baseline;
+    i{font-style: normal;font-family: var(--display);font-weight: 800;color: var(--violet);font-size: 14px;}
+  }
+  p{margin: 0;color: var(--muted);font-size: 14px;line-height: 1.65;}
+}
+
+// Archive 썸네일 4열
+.grid4{display: grid;grid-template-columns: repeat(4,1fr);gap: 16px;
+  .t{border-radius: 8px;overflow: hidden;box-shadow: 0 0 0 1px var(--card-line);background: #fff;}
+}
+
+// 프로그램P: 접근 단계 · 분석 보드 · 화면설계
+.steps{display: flex;flex-direction: column;gap: 14px;
+  div{display: grid;grid-template-columns: 8.5em 1fr;gap: 16px;font-size: 16px;line-height: 1.6;color: var(--sub);}
+  b{color: var(--violet);font-weight: 700;}
+}
+.prose{font-size: 16px;line-height: 1.8;color: var(--sub);margin: 0;
+  b{color: var(--ink);}
+}
+.boards{display: grid;grid-template-columns: 1fr 1fr;gap: 24px;}
+.board{
+  img{height: 380px;object-fit: cover;object-position: top;}
+  .cap{padding: 14px 18px;
+    b{display: block;font-size: 15px;}
+    span{color: var(--muted);font-size: 13px;}
+  }
+}
+.deliver{display: grid;grid-template-columns: auto auto 1fr;gap: 32px;align-items: start;
+  .shot img{height: 430px;width: auto;}
+  figure{margin: 0;}
+  figcaption{color: var(--muted);font-size: 13px;margin-top: 10px;}
+}
+.pts{display: flex;flex-direction: column;gap: 22px;
+  b{color: var(--violet);display: block;margin-bottom: 6px;font-size: 16px;}
+  p{margin: 0;color: var(--sub);font-size: 14.5px;line-height: 1.65;}
+}
+
+// 더존테크윌 홈페이지: 메뉴구조(IA) 그림 · 기획 접근 4열
+.ia{margin: 0;
+  // FigJam 내보낸 그림은 상자 테두리가 그림 끝에 붙어 있어 보드 바탕색(#F4F4F4)으로 여백을 둠
+  .shot{padding: 24px;background: #F4F4F4;}
+  figcaption{color: var(--muted);font-size: 13px;margin-top: 10px;}
+}
+.notes{display: grid;grid-template-columns: repeat(4,1fr);gap: 28px;
+  b{color: var(--violet);display: block;margin-bottom: 6px;font-size: 16px;}
+  p{margin: 0;color: var(--sub);font-size: 14.5px;line-height: 1.65;}
+}
+
+// Skills: 기술 스택 · 디자인 시스템 카드
+.stack{display: flex;flex-direction: column;gap: 14px;
+  div{display: grid;grid-template-columns: 5.5em 1fr;align-items: center;gap: 12px;}
+  span{color: var(--muted);font-size: 14px;}
+}
+.chips{display: flex;flex-wrap: wrap;gap: 8px;
+  i{font-style: normal;border: 1px solid var(--card-line);border-radius: 999px;padding: 6px 13px;font-size: 13.5px;color: var(--sub);background: var(--card);}
+}
+.ds{background: var(--card);border: 1px solid var(--card-line);border-radius: 14px;padding: 28px 30px;
+  h3{margin: 0 0 6px;font-size: 22px;font-weight: 900;background: linear-gradient(90deg,#C7A6FF,var(--violet));-webkit-background-clip: text;background-clip: text;color: transparent;display: inline-block;}
+  .meta{color: var(--muted);font-size: 13px;display: block;}
+  .g{display: grid;grid-template-columns: 1fr 1fr;gap: 20px 30px;margin-top: 20px;border-top: 1px solid var(--card-line);padding-top: 20px;
+    b{color: var(--gold);font-size: 14.5px;display: block;margin-bottom: 6px;}
+    p{margin: 0;color: var(--sub);font-size: 14px;line-height: 1.65;}
+  }
+}

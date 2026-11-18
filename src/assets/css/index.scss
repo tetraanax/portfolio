@@ -1,0 +1,12 @@
+@charset "UTF-8";
+
+/**
+ * 파일설명: 스타일 진입점 — 기본 스타일 다음에 좁은 화면(flat) 덮어쓰기를 불러옴
+ * 작성자: 이영호
+ * 작성일: 2026-10-30
+ * @returns scss
+
+ * 각 파일의 CSS는 처음 @use 될 때 한 번만 나옴(keyframe → style 순) → flat이 맨 끝
+ */
+@use 'style';
+@use 'flat';
