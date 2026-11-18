@@ -48,7 +48,8 @@ img{display: block;width: 100%;max-width: 100%;height: auto;}
   // 광원: 오른쪽 위 자주(--gx·--gy로 진행에 따라 이동) + 왼쪽 아래 파랑
   &::before{content: "";position: absolute;inset: 0;pointer-events: none;background: radial-gradient(42% 46% at var(--gx) var(--gy),rgba(214,74,120,.28),rgba(118,72,210,.18) 45%,transparent 75%),radial-gradient(40% 50% at 8% 100%,rgba(48,86,170,.28),transparent 70%);}
 }
-#world{position: absolute;left: 0;top: 0;transform-origin: 0 0;will-change: transform;}
+// will-change: transform 금지 — 레이어가 처음 해상도로 고정돼 줌아웃 때 넓은 영역을 그리다 GPU 타일 메모리가 모자라 화면이 검게 깜빡임
+#world{position: absolute;left: 0;top: 0;transform-origin: 0 0;}
 // 도화지: 점 격자로 이동감을 줌
 .grid{position: absolute;pointer-events: none;background-image: radial-gradient(circle,#232539 1.6px,transparent 1.8px);background-size: 56px 56px;}
 // 궤도선 · 섹션 라벨(.lb) · PART 라벨(.pt) · 지점(.node), 현재 섹션은 .on
